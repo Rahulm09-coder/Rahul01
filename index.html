@@ -34,7 +34,11 @@
       <!-- Logo word mark — bubble letters -->
       <div class="splash-logo-wrap" id="splash-logo-wrap">
         <h1 class="splash-logo-text">
-          <span class="bubble-letter bl-s">s</span><span class="bubble-letter bl-t">t</span><span class="bubble-letter bl-y">y</span><span class="bubble-letter bl-l">l</span><span class="bubble-letter bl-e">e</span><span class="bubble-gap"></span><span class="bubble-letter bl-h">h</span><span class="bubble-letter bl-u">u</span><span class="bubble-letter bl-b2">b</span>
+          <span class="bubble-letter bl-s">s</span><span class="bubble-letter bl-t">t</span><span
+            class="bubble-letter bl-y">y</span><span class="bubble-letter bl-l">l</span><span
+            class="bubble-letter bl-e">e</span><span class="bubble-gap"></span><span
+            class="bubble-letter bl-h">h</span><span class="bubble-letter bl-u">u</span><span
+            class="bubble-letter bl-b2">b</span>
         </h1>
       </div>
 
@@ -46,7 +50,9 @@
     </div>
 
     <!-- Bottom progress bar -->
-    <div class="splash-progress"><div class="splash-progress-fill" id="splash-progress-fill"></div></div>
+    <div class="splash-progress">
+      <div class="splash-progress-fill" id="splash-progress-fill"></div>
+    </div>
   </div>
 
   <!-- ══════════════════ AUTH SCREEN ══════════════════ -->
@@ -57,11 +63,12 @@
       <div class="auth-logo">
         <div class="logo-icon">
           <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-            <path d="M16 2L4 8v8c0 7 5.2 13.5 12 15.5C22.8 29.5 28 23 28 16V8L16 2z" fill="url(#authLogoGrad)"/>
-            <path d="M11 16l3 3 7-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 2L4 8v8c0 7 5.2 13.5 12 15.5C22.8 29.5 28 23 28 16V8L16 2z" fill="url(#authLogoGrad)" />
+            <path d="M11 16l3 3 7-7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
             <defs>
               <linearGradient id="authLogoGrad" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#6C3BFF"/><stop offset="1" stop-color="#C850C0"/>
+                <stop stop-color="#6C3BFF" />
+                <stop offset="1" stop-color="#C850C0" />
               </linearGradient>
             </defs>
           </svg>
@@ -80,11 +87,11 @@
       <form class="auth-form" id="form-login" onsubmit="handleLogin(event)">
         <div class="auth-field">
           <label>Email</label>
-          <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email"/>
+          <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email" />
         </div>
         <div class="auth-field">
           <label>Password</label>
-          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password"/>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password" />
         </div>
         <p class="auth-error" id="login-error"></p>
         <button type="submit" class="auth-btn">Login</button>
@@ -94,15 +101,16 @@
       <form class="auth-form auth-form-hidden" id="form-signup" onsubmit="handleSignup(event)">
         <div class="auth-field">
           <label>Name</label>
-          <input type="text" id="signup-name" placeholder="Your name" required autocomplete="name"/>
+          <input type="text" id="signup-name" placeholder="Your name" required autocomplete="name" />
         </div>
         <div class="auth-field">
           <label>Email</label>
-          <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email"/>
+          <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email" />
         </div>
         <div class="auth-field">
           <label>Password</label>
-          <input type="password" id="signup-password" placeholder="Min 6 characters" required autocomplete="new-password"/>
+          <input type="password" id="signup-password" placeholder="Min 6 characters" required
+            autocomplete="new-password" />
         </div>
         <p class="auth-error" id="signup-error"></p>
         <button type="submit" class="auth-btn">Create Account</button>
@@ -204,38 +212,52 @@
       <div class="features-grid">
         <a href="outfit-builder.html" class="feature-card">
           <div class="fc-icon">👗</div>
-          <div class="fc-text"><div class="fc-title">Outfit Builder</div><div class="fc-sub">Mix & score combinations</div></div>
+          <div class="fc-text">
+            <div class="fc-title">Outfit Builder</div>
+            <div class="fc-sub">Mix & score combinations</div>
+          </div>
           <span class="fc-arrow">›</span>
         </a>
         <a href="color-picker.html" class="feature-card">
           <div class="fc-icon">🎨</div>
-          <div class="fc-text"><div class="fc-title">Color Picker</div><div class="fc-sub">Check color compatibility</div></div>
+          <div class="fc-text">
+            <div class="fc-title">Color Picker</div>
+            <div class="fc-sub">Check color compatibility</div>
+          </div>
           <span class="fc-arrow">›</span>
         </a>
 
         <a href="weather-outfit.html" class="feature-card">
           <div class="fc-icon">🌤️</div>
-          <div class="fc-text"><div class="fc-title">Weather Outfit</div><div class="fc-sub">Dress for today's weather</div></div>
+          <div class="fc-text">
+            <div class="fc-title">Weather Outfit</div>
+            <div class="fc-sub">Dress for today's weather</div>
+          </div>
           <span class="fc-arrow">›</span>
         </a>
-        <a href="style-quiz.html" class="feature-card">
-          <div class="fc-icon">✨</div>
-          <div class="fc-text"><div class="fc-title">Style Quiz</div><div class="fc-sub">Discover your personality</div></div>
-          <span class="fc-arrow">›</span>
-        </a>
+
         <a href="wishlist.html" class="feature-card">
           <div class="fc-icon">❤️</div>
-          <div class="fc-text"><div class="fc-title">My Wishlist</div><div class="fc-sub">View saved outfits</div></div>
+          <div class="fc-text">
+            <div class="fc-title">My Wishlist</div>
+            <div class="fc-sub">View saved outfits</div>
+          </div>
           <span class="fc-arrow">›</span>
         </a>
         <a href="advisor.html" class="feature-card">
           <div class="fc-icon">🤖</div>
-          <div class="fc-text"><div class="fc-title">AI Advisor</div><div class="fc-sub">Chat with your stylist</div></div>
+          <div class="fc-text">
+            <div class="fc-title">AI Advisor</div>
+            <div class="fc-sub">Chat with your stylist</div>
+          </div>
           <span class="fc-arrow">›</span>
         </a>
         <a href="profile.html" class="feature-card">
           <div class="fc-icon">👤</div>
-          <div class="fc-text"><div class="fc-title">My Profile</div><div class="fc-sub">Stats, dark mode & more</div></div>
+          <div class="fc-text">
+            <div class="fc-title">My Profile</div>
+            <div class="fc-sub">Stats, dark mode & more</div>
+          </div>
           <span class="fc-arrow">›</span>
         </a>
       </div>
@@ -285,7 +307,8 @@
 
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://www.sheknows.com/wp-content/uploads/2023/09/Screen-Shot-2023-09-21-at-2.42.38-PM.png?w=1440"
+              <img
+                src="https://www.sheknows.com/wp-content/uploads/2023/09/Screen-Shot-2023-09-21-at-2.42.38-PM.png?w=1440"
                 alt="Siblings in coastal matching outfits" loading="lazy" />
               <span class="prod-tag new">Perfect Duo</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
@@ -308,7 +331,8 @@
 
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://www.fancydresswale.com/cdn/shop/products/Newborn-Toddler-Kids-Monkey-Printed-Baby-Boys-Clothing-Set-Long-Sleeve-Tops-Pants-Little-Kids-All-season-Outfits_-Brown-fancydresswale.com-53415029.jpg?v=1753687562"
+              <img
+                src="https://www.fancydresswale.com/cdn/shop/products/Newborn-Toddler-Kids-Monkey-Printed-Baby-Boys-Clothing-Set-Long-Sleeve-Tops-Pants-Little-Kids-All-season-Outfits_-Brown-fancydresswale.com-53415029.jpg?v=1753687562"
                 alt="Kid in jungle motif outfit" loading="lazy" />
               <span class="prod-tag trending">Contrast Tip</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
@@ -753,14 +777,18 @@
     <section class="category-row alt-row" id="womens-row">
       <div class="category-label-col">
         <div class="cat-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/><path d="M12 12v8M9 18h6"/>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M12 12v8M9 18h6" />
           </svg>
         </div>
         <h2 class="cat-name">Womens</h2>
         <p class="cat-desc">Elegant palettes &amp;<br />occasion dressing</p>
         <button class="cat-cta-btn" id="womens-cat-btn">Explore
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </button>
         <div class="cat-sub-links">
           <span class="sub-chip">Sarees</span>
@@ -774,7 +802,8 @@
         <div class="product-scroll" id="womens-scroll">
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80" alt="Woman in elegant wrap dress" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80"
+                alt="Woman in elegant wrap dress" loading="lazy" />
               <span class="prod-tag new">Power Look</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -794,7 +823,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80" alt="Woman in pastel co-ord set" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80"
+                alt="Woman in pastel co-ord set" loading="lazy" />
               <span class="prod-tag trending">Soft Power</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -814,7 +844,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80" alt="Woman in power blazer" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80"
+                alt="Woman in power blazer" loading="lazy" />
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
             <div class="prod-info">
@@ -833,7 +864,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80" alt="Woman in floral maxi" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80"
+                alt="Woman in floral maxi" loading="lazy" />
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
             <div class="prod-info">
@@ -852,7 +884,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80" alt="Woman in ethnic kurta" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80"
+                alt="Woman in ethnic kurta" loading="lazy" />
               <span class="prod-tag new">Heritage</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -872,7 +905,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=80" alt="Woman in street style" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=80"
+                alt="Woman in street style" loading="lazy" />
               <span class="prod-tag trending">Street Edit</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -901,14 +935,18 @@
     <section class="category-row" id="accessories-row">
       <div class="category-label-col">
         <div class="cat-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
           </svg>
         </div>
         <h2 class="cat-name">Accessories</h2>
         <p class="cat-desc">Complete your look<br />with the right accents</p>
         <button class="cat-cta-btn" id="acc-cat-btn">Style It
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </button>
         <div class="cat-sub-links">
           <span class="sub-chip">Bags</span>
@@ -922,7 +960,8 @@
         <div class="product-scroll" id="acc-scroll">
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80" alt="Leather tote bag" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80" alt="Leather tote bag"
+                loading="lazy" />
               <span class="prod-tag new">Must Have</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -942,7 +981,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80" alt="Minimalist watch" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80" alt="Minimalist watch"
+                loading="lazy" />
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
             <div class="prod-info">
@@ -961,7 +1001,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80" alt="Gold jewellery set" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80"
+                alt="Gold jewellery set" loading="lazy" />
               <span class="prod-tag trending">Gold Rush</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -981,7 +1022,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Sneakers" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Sneakers"
+                loading="lazy" />
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
             <div class="prod-info">
@@ -1000,7 +1042,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80" alt="Sunglasses" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80" alt="Sunglasses"
+                loading="lazy" />
               <span class="prod-tag new">Summer Essential</span>
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
@@ -1020,7 +1063,8 @@
           </article>
           <article class="product-card">
             <div class="prod-img-wrap ken-burns">
-              <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80" alt="Crossbody bag" loading="lazy"/>
+              <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80" alt="Crossbody bag"
+                loading="lazy" />
               <button class="prod-wish" aria-label="Add to wishlist">♡</button>
             </div>
             <div class="prod-info">
@@ -1086,7 +1130,8 @@
         </div>
         <div class="ct-card">
           <div class="ct-swatches">
-            <span style="background:#f8efba"></span><span style="background:#c8a97e"></span><span style="background:#8B6914"></span>
+            <span style="background:#f8efba"></span><span style="background:#c8a97e"></span><span
+              style="background:#8B6914"></span>
           </div>
           <h3>Tonal Beige</h3>
           <p>Monochromatic layering in warm neutrals. The quiet luxury formula.</p>
@@ -1185,7 +1230,8 @@
 
     <a href="profile.html" class="bn-item" id="bn-profile" aria-label="My profile">
       <div class="bn-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
