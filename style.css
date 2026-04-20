@@ -1832,3 +1832,36 @@ body.no-scroll { overflow: hidden; }
   .sa-panel { width: 260px; }
   .color-theory-section, .trends-section { padding: 32px 14px; }
 }
+
+/* ══════════════════════════════════════════════
+   AI ADVISOR FLOATING BUTTON (DRAGGABLE)
+═══════════════════════════════════════════════ */
+.ai-fab {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #6C3BFF, #C850C0);
+  color: #fff;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 8px 28px rgba(108,59,255,0.5);
+  transition: box-shadow 0.2s, transform 0.2s;
+  touch-action: none;
+}
+.ai-fab:hover { box-shadow: 0 12px 36px rgba(108,59,255,0.7); transform: scale(1.04); }
+.ai-fab:active { cursor: grabbing; }
+.ai-fab-icon { font-size: 1.1rem; }
+@keyframes fabPulse {
+  0%,100% { box-shadow: 0 8px 28px rgba(108,59,255,0.5); }
+  50%      { box-shadow: 0 8px 40px rgba(200,80,192,0.7); }
+}
+.ai-fab { animation: fabPulse 3s ease-in-out infinite; }

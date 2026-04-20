@@ -490,3 +490,62 @@ function logoutUser() {
   localStorage.removeItem('sh_user');
   location.reload();
 }
+
+/* ══════════════════════════════════════════
+   AI ADVISOR — DRAGGABLE FAB
+══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  const fab = document.getElementById('ai-fab');
+  if (!fab) return;
+
+  let dragging = false, startX, startY, origX, origY, moved = false;
+
+  function getPos() {
+    const r = fab.getBoundingClientRect();
+    return { x: r.left, y: r.top };
+  }
+
+  function onDown(e) {
+    dragging = true; moved = false;
+    const pt = e.touches ? e.touches[0] : e;
+    startX = pt.clientX; startY = pt.clientY;
+    const pos = getPos();
+    origX = pos.x; origY = pos.y;
+    fab.style.transition = 'none';
+    fab.style.animation = 'none';
+    e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    const pt = e.touches ? e.touches[0] : e;
+    const dx = pt.clientX - startX;
+    const dy = pt.clientY - startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    const newX = Math.max(0, Math.min(window.innerWidth - fab.offsetWidth, origX + dx));
+    const newY = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, origY + dy));
+    fab.style.left = newX + 'px';
+    fab.style.top  = newY + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+    e.preventDefault();
+  }
+
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    fab.style.transition = '';
+    fab.style.animation = '';
+    if (!moved) {
+      // It was a click — go to advisor page
+      window.location.href = 'advisor.html';
+    }
+  }
+
+  fab.addEventListener('mousedown', onDown);
+  fab.addEventListener('touchstart', onDown, { passive: false });
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+});

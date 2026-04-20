@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Style Advisor — StyleHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --primary:#6C3BFF;--accent:#C850C0;
+      --grad:linear-gradient(135deg,#6C3BFF,#C850C0);
+      --bg:#0a0a0b;--surface:rgba(255,255,255,0.05);
+      --border:rgba(255,255,255,0.1);
+      --text:#fff;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.4);
+      --radius:16px;--font-head:'Outfit',sans-serif;--font-body:'Inter',sans-serif;
+    }
+    html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);}
+
+    /* ── Background orbs ── */
+    .bg-orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+    .bg-orb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(108,59,255,0.2),transparent 70%);top:-150px;left:-150px;}
+    .bg-orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(200,80,192,0.15),transparent 70%);bottom:-100px;right:-100px;}
+
+    /* ── Header ── */
+    .adv-header{
+      position:sticky;top:0;z-index:100;
+      display:flex;align-items:center;gap:14px;
+      padding:14px 20px;
+      background:rgba(10,10,11,0.85);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .adv-back{
+      display:flex;align-items:center;justify-content:center;
+      width:38px;height:38px;border-radius:50%;
+      background:var(--surface);border:1px solid var(--border);
+      color:var(--text2);font-size:1.1rem;cursor:pointer;
+      text-decoration:none;transition:background 0.2s;
+    }
+    .adv-back:hover{background:rgba(108,59,255,0.2);}
+    .adv-logo{display:flex;align-items:center;gap:8px;}
+    .adv-logo-icon{
+      width:36px;height:36px;border-radius:10px;
+      background:var(--grad);display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;box-shadow:0 4px 14px rgba(108,59,255,0.4);
+    }
+    .adv-logo-text{font-family:var(--font-head);font-size:1.1rem;font-weight:800;}
+    .adv-logo-text span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .adv-status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text3);}
+    .adv-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+    /* ── Chat area ── */
+    .adv-body{
+      position:relative;z-index:1;
+      display:flex;flex-direction:column;
+      height:calc(100vh - 67px);
+    }
+    .chat-messages{
+      flex:1;overflow-y:auto;padding:20px 16px;
+      display:flex;flex-direction:column;gap:16px;
+      scrollbar-width:thin;scrollbar-color:rgba(108,59,255,0.3) transparent;
+    }
+    .chat-messages::-webkit-scrollbar{width:4px;}
+    .chat-messages::-webkit-scrollbar-thumb{background:rgba(108,59,255,0.3);border-radius:2px;}
+
+    /* ── Messages ── */
+    .msg{display:flex;gap:10px;max-width:85%;animation:msgIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+    @keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .msg.user{align-self:flex-end;flex-direction:row-reverse;}
+    .msg.bot{align-self:flex-start;}
+
+    .msg-avatar{
+      width:34px;height:34px;border-radius:50%;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;font-size:1rem;
+    }
+    .msg.bot .msg-avatar{background:var(--grad);box-shadow:0 4px 12px rgba(108,59,255,0.4);}
+    .msg.user .msg-avatar{background:rgba(255,255,255,0.1);border:1px solid var(--border);}
+
+    .msg-bubble{
+      padding:12px 16px;border-radius:18px;
+      font-size:0.88rem;line-height:1.6;
+    }
+    .msg.bot .msg-bubble{
+      background:rgba(255,255,255,0.07);
+      border:1px solid var(--border);
+      border-bottom-left-radius:4px;
+      color:var(--text);
+    }
+    .msg.user .msg-bubble{
+      background:var(--grad);
+      border-bottom-right-radius:4px;
+      color:#fff;
+    }
+    .msg-time{font-size:0.65rem;color:var(--text3);margin-top:4px;text-align:right;}
+    .msg.bot .msg-time{text-align:left;}
+
+    /* ── Typing indicator ── */
+    .typing{display:flex;gap:5px;padding:14px 16px;align-items:center;}
+    .typing span{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4);animation:typingDot 1.2s infinite;}
+    .typing span:nth-child(2){animation-delay:0.2s;}
+    .typing span:nth-child(3){animation-delay:0.4s;}
+    @keyframes typingDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+    /* ── Quick suggestions ── */
+    .quick-chips{
+      display:flex;flex-wrap:wrap;gap:8px;
+      padding:0 16px 12px;
+    }
+    .quick-chip{
+      padding:7px 14px;border-radius:999px;
+      font-size:0.75rem;font-weight:600;font-family:var(--font-body);
+      background:rgba(108,59,255,0.15);border:1px solid rgba(108,59,255,0.3);
+      color:rgba(255,255,255,0.8);cursor:pointer;
+      transition:background 0.2s,transform 0.2s;
+    }
+    .quick-chip:hover{background:rgba(108,59,255,0.35);transform:translateY(-1px);}
+
+    /* ── Input bar ── */
+    .chat-input-bar{
+      padding:12px 16px;
+      background:rgba(10,10,11,0.9);
+      backdrop-filter:blur(20px);
+      border-top:1px solid var(--border);
+      display:flex;gap:10px;align-items:flex-end;
+    }
+    .chat-input{
+      flex:1;background:rgba(255,255,255,0.07);
+      border:1.5px solid var(--border);border-radius:14px;
+      padding:12px 16px;font-size:0.9rem;font-family:var(--font-body);
+      color:#fff;outline:none;resize:none;max-height:120px;min-height:46px;
+      transition:border-color 0.2s;line-height:1.5;
+    }
+    .chat-input::placeholder{color:var(--text3);}
+    .chat-input:focus{border-color:var(--primary);}
+    .send-btn{
+      width:46px;height:46px;border-radius:14px;flex-shrink:0;
+      background:var(--grad);border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 14px rgba(108,59,255,0.4);
+      transition:transform 0.2s,box-shadow 0.2s;
+    }
+    .send-btn:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(108,59,255,0.6);}
+    .send-btn svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+    /* ── Welcome card ── */
+    .welcome-card{
+      background:rgba(255,255,255,0.04);border:1px solid var(--border);
+      border-radius:20px;padding:24px;margin:8px 0;text-align:center;
+    }
+    .welcome-card .wc-icon{font-size:2.5rem;margin-bottom:12px;}
+    .welcome-card h2{font-family:var(--font-head);font-size:1.3rem;font-weight:800;margin-bottom:8px;}
+    .welcome-card p{font-size:0.82rem;color:var(--text2);line-height:1.6;}
+  </style>
+</head>
+<body>
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <header class="adv-header">
+    <a href="index.html" class="adv-back">←</a>
+    <div class="adv-logo">
+      <div class="adv-logo-icon">✨</div>
+      <div class="adv-logo-text">AI Style <span>Advisor</span></div>
+    </div>
+    <div class="adv-status">
+      <div class="adv-dot"></div>
+      Online
+    </div>
+  </header>
+
+  <div class="adv-body">
+    <div class="chat-messages" id="chat-messages">
+      <div class="welcome-card">
+        <div class="wc-icon">👗</div>
+        <h2>Your Personal Style Advisor</h2>
+        <p>Ask me anything about fashion — outfit ideas, color combinations, occasion dressing, trends, or what to wear. I'll give you honest, accurate advice.</p>
+      </div>
+    </div>
+
+    <div class="quick-chips" id="quick-chips">
+      <button class="quick-chip" onclick="sendQuick(this)">What should I wear to a wedding?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">Best colors for dark skin tone?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">How to dress for a job interview?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">What is quiet luxury style?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">How to style a saree?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">Best outfit for summer?</button>
+    </div>
+
+    <div class="chat-input-bar">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask about outfits, colors, occasions…" rows="1"></textarea>
+      <button class="send-btn" onclick="sendMessage()" id="send-btn">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById('chat-input');
+    const messagesEl = document.getElementById('chat-messages');
+
+    // Auto-resize textarea
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    function sendQuick(btn) {
+      input.value = btn.textContent;
+      document.getElementById('quick-chips').style.display = 'none';
+      sendMessage();
+    }
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      appendMsg('user', text);
+      input.value = '';
+      input.style.height = 'auto';
+      showTyping();
+      setTimeout(() => {
+        removeTyping();
+        const reply = getReply(text);
+        appendMsg('bot', reply);
+      }, 900 + Math.random() * 600);
+    }
+
+    function appendMsg(role, text) {
+      const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      div.innerHTML = `
+        <div class="msg-avatar">${role === 'bot' ? '✨' : '👤'}</div>
+        <div>
+          <div class="msg-bubble">${text}</div>
+          <div class="msg-time">${now}</div>
+        </div>`;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function showTyping() {
+      const div = document.createElement('div');
+      div.className = 'msg bot'; div.id = 'typing-msg';
+      div.innerHTML = `<div class="msg-avatar">✨</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+    function removeTyping() {
+      const t = document.getElementById('typing-msg');
+      if (t) t.remove();
+    }
+
+    // ── Fashion Knowledge Base ──
+    function getReply(q) {
+      const query = q.toLowerCase();
+
+      // Wedding
+      if (query.includes('wedding')) {
+        if (query.includes('guest')) return "As a wedding guest, avoid white, ivory, or cream — those are reserved for the bride. Great choices: dusty rose, sage green, navy, burgundy, or gold. For Indian weddings, opt for vibrant ethnic wear like lehengas, sarees, or sherwanis. For Western weddings, a midi dress or a tailored suit works perfectly.";
+        return "For a wedding, choose elegant and occasion-appropriate attire. Women: sarees, lehengas, anarkalis, or formal gowns depending on the wedding type. Men: sherwanis for Indian weddings, suits or tuxedos for Western. Avoid casual wear, jeans, or overly casual prints. Stick to rich, festive colors.";
+      }
+
+      // Job interview
+      if (query.includes('interview') || query.includes('job')) {
+        return "For a job interview, dress one level above the company's dress code. For corporate roles: formal suit in navy, charcoal, or black. For creative roles: smart casual — tailored trousers, a neat shirt or blouse. Avoid loud prints, excessive accessories, or casual wear. Clean, well-fitted clothes signal professionalism and confidence.";
+      }
+
+      // Colors for skin tone
+      if (query.includes('dark skin') || query.includes('dark tone') || query.includes('brown skin')) {
+        return "For dark skin tones, these colors look absolutely stunning:\n\n✅ Rich jewel tones: emerald green, royal blue, deep purple, burgundy\n✅ Warm earth tones: terracotta, mustard, burnt orange, camel\n✅ Bright pops: coral, fuchsia, cobalt, lime green\n✅ Classic white and ivory — creates beautiful contrast\n\nAvoid: very dark navy or black on black — it can lose definition. Pastels can work but choose saturated versions.";
+      }
+      if (query.includes('fair skin') || query.includes('light skin') || query.includes('pale')) {
+        return "For fair/light skin tones, these colors work beautifully:\n\n✅ Cool tones: navy, cobalt blue, forest green, burgundy, plum\n✅ Warm tones: coral, peach, warm red, camel\n✅ Pastels: blush pink, lavender, mint — very flattering\n\nAvoid: very pale yellows or beiges close to your skin tone — they can wash you out. High contrast colors like black and white are always a safe bet.";
+      }
+
+      // Quiet luxury
+      if (query.includes('quiet luxury') || query.includes('old money')) {
+        return "Quiet Luxury (also called 'Old Money' aesthetic) is about understated elegance:\n\n🎯 Key pieces: cashmere sweaters, tailored trousers, crisp white shirts, loafers, minimal leather bags\n🎨 Color palette: beige, camel, ivory, cream, navy, grey, white — no loud prints or logos\n✂️ Fit is everything — clothes should be perfectly tailored\n🚫 No visible logos, no flashy branding\n\nBrands that nail this: Loro Piana, The Row, Brunello Cucinelli. Budget alternatives: Uniqlo, Massimo Dutti, Mango.";
+      }
+
+      // Saree styling
+      if (query.includes('saree') || query.includes('sari')) {
+        return "Saree styling tips:\n\n👗 Draping: The Nivi drape (Andhra style) is the most common and universally flattering. For a modern look, try the butterfly or dhoti drape.\n\n👚 Blouse: A well-fitted blouse is key. Deep back, off-shoulder, or crop blouse styles are trending.\n\n💄 Accessories: Keep jewelry minimal if the saree is heavy. Statement earrings work best.\n\n👠 Footwear: Heels elongate the silhouette. Block heels are comfortable for long events.\n\n🎨 Color tip: Contrast your blouse with the saree — e.g., a red saree with a gold or black blouse.";
+      }
+
+      // Summer outfits
+      if (query.includes('summer')) {
+        return "Best summer outfit ideas:\n\n☀️ Fabrics: Linen, cotton, chambray — breathable and sweat-resistant\n🎨 Colors: White, sky blue, coral, mint, yellow, pastels\n\nFor women: Flowy midi dresses, linen co-ord sets, cotton kurtas, shorts + breezy tops\nFor men: Linen shirts (half-tucked), cotton polos, chino shorts, light-wash jeans\n\n🚫 Avoid: Polyester, dark heavy fabrics, tight synthetic clothing — they trap heat.\n\nPro tip: A white linen shirt is the single most versatile summer piece you can own.";
+      }
+
+      // Color combinations
+      if (query.includes('color') || query.includes('colour') || query.includes('combination') || query.includes('palette')) {
+        return "Top color combination rules:\n\n🎨 Complementary (opposite on wheel): Blue + Orange, Purple + Yellow, Red + Green — bold and high contrast\n\n🌈 Analogous (neighbors on wheel): Blue + Purple + Pink — harmonious and cohesive\n\n⚫ Neutral base: Build around white, black, navy, or beige — then add one accent color\n\n🔢 Rule of Three: Max 3 colors per outfit. One dominant (60%), one secondary (30%), one accent (10%)\n\n✨ Monochromatic: Same color in different shades — always looks intentional and polished";
+      }
+
+      // Casual outfit
+      if (query.includes('casual')) {
+        return "Casual outfit formula that always works:\n\n👕 Top: Plain tee, oversized shirt, or casual blouse\n👖 Bottom: Well-fitted jeans, chinos, or casual trousers\n👟 Shoes: White sneakers, loafers, or clean casual shoes\n\nElevate it: Add a denim jacket, a minimal watch, or a crossbody bag.\n\n🎨 Color tip: Stick to neutrals (white, grey, navy, black) for the base — then add one color pop through accessories or a layer.";
+      }
+
+      // Formal outfit
+      if (query.includes('formal') || query.includes('office') || query.includes('work')) {
+        return "Formal/office dressing guide:\n\n👔 Men: Tailored suit (navy or charcoal), crisp white or light blue shirt, leather shoes, minimal tie. Fit is everything.\n\n👗 Women: Tailored blazer + trousers, pencil skirt + blouse, or a structured midi dress. Stick to neutral or muted tones.\n\n🎨 Colors: Navy, charcoal, black, white, grey, burgundy — professional and authoritative\n\n🚫 Avoid: Loud prints, casual sneakers, excessive jewelry, wrinkled clothes\n\n💡 Pro tip: A well-fitted blazer is the single most powerful piece in any professional wardrobe.";
+      }
+
+      // Body type
+      if (query.includes('body type') || query.includes('pear') || query.includes('apple') || query.includes('hourglass') || query.includes('rectangle')) {
+        return "Dressing for your body type:\n\n⌛ Hourglass: Wrap dresses, fitted tops, belted styles — highlight your waist\n🍐 Pear (wider hips): A-line skirts, wide-leg trousers, structured shoulders — balance upper and lower\n🍎 Apple (fuller midsection): Empire waist, flowy tops, V-necks, straight-leg trousers — elongate the torso\n📏 Rectangle (straight): Peplum tops, ruffles, belted outfits — create curves\n\nRemember: These are guidelines, not rules. Wear what makes YOU feel confident.";
+      }
+
+      // Accessories
+      if (query.includes('accessori') || query.includes('jewel') || query.includes('bag') || query.includes('watch')) {
+        return "Accessory rules:\n\n💎 Less is more: If your outfit is bold/printed, keep accessories minimal. If your outfit is simple, go statement.\n\n👜 Bag: Match the formality — clutch for evening, tote for work, crossbody for casual\n\n⌚ Watch: A clean minimal watch elevates any outfit instantly\n\n📿 Jewelry: Mix metals carefully — gold with warm tones, silver with cool tones. Don't mix gold and silver unless intentional.\n\n🎨 Color: Accessories should complement, not compete with your outfit.";
+      }
+
+      // Trends 2025/2026
+      if (query.includes('trend') || query.includes('2025') || query.includes('2026') || query.includes('fashion now')) {
+        return "Top fashion trends right now (2025-2026):\n\n1. 🤫 Quiet Luxury — Understated, logo-free, high-quality basics\n2. 💊 Dopamine Dressing — Bold, saturated colors that boost mood\n3. 🌿 Eco Chic — Sustainable fabrics, earthy tones (sage, terracotta, sand)\n4. 🏕️ Gorpcore — Outdoor utility meets street style (cargo, technical fabrics)\n5. 👗 Sheer & Layering — Transparent fabrics layered over basics\n6. 🪡 Texture Play — Mixing textures (leather + knit, silk + denim)\n7. 👖 Wide-leg everything — Wide-leg trousers, jeans, and palazzo pants";
+      }
+
+      // Ethnic wear
+      if (query.includes('ethnic') || query.includes('kurta') || query.includes('lehenga') || query.includes('sherwani') || query.includes('indian')) {
+        return "Indian ethnic wear guide:\n\n👗 Women:\n• Saree — timeless, for all occasions\n• Lehenga — weddings and festive events\n• Anarkali — elegant, suits all body types\n• Kurta + palazzo — modern ethnic casual\n\n👔 Men:\n• Sherwani — weddings and formal events\n• Kurta + churidar — festive and semi-formal\n• Nehru jacket over shirt — smart ethnic casual\n\n🎨 Festive colors: Red, gold, emerald, royal blue, maroon, mustard\n💡 Tip: Contrast your dupatta or stole with the main outfit for a polished look.";
+      }
+
+      // What to wear
+      if (query.includes('what to wear') || query.includes('what should i wear') || query.includes('outfit idea')) {
+        return "To give you the best outfit advice, tell me:\n\n1. 📅 What's the occasion? (casual, work, wedding, party, date, etc.)\n2. 🌡️ What's the weather/season?\n3. 👤 Your gender preference?\n4. 🎨 Any color preferences?\n\nOr just describe the situation and I'll give you a complete outfit recommendation!";
+      }
+
+      // Denim
+      if (query.includes('denim') || query.includes('jeans')) {
+        return "Denim styling guide:\n\n👖 Jeans fits:\n• Slim fit — versatile, works for casual and smart casual\n• Wide-leg — trendy, pair with fitted top\n• Straight leg — the most universally flattering\n• Skinny — best with oversized tops or longline jackets\n\n🎨 Washes:\n• Light wash — casual, summer-friendly\n• Dark wash — more formal, slimming effect\n• Black denim — dressier, can go semi-formal\n\n💡 Golden rule: One denim piece at a time. Don't double denim unless you're very intentional about it.";
+      }
+
+      // Shoes / footwear
+      if (query.includes('shoe') || query.includes('footwear') || query.includes('sneaker') || query.includes('heel') || query.includes('boot')) {
+        return "Footwear guide:\n\n👟 White sneakers — the most versatile shoe ever. Works with everything.\n👞 Loafers — smart casual, great for office and casual alike\n👠 Block heels — comfortable and stylish for events\n👢 Ankle boots — elevate any casual or smart casual outfit\n🥿 Ballet flats — feminine, comfortable, great for daily wear\n\n🎨 Color rule:\n• Nude/beige shoes — elongate legs, go with everything\n• White shoes — fresh and modern\n• Black shoes — formal and versatile\n• Metallic (gold/silver) — evening and festive";
+      }
+
+      // Default intelligent response
+      const defaults = [
+        `Great question about "${q}"! Here's my honest advice: Fashion is about expressing yourself confidently. Start with fit — well-fitted clothes in any style look better than expensive ill-fitting ones. Build a capsule wardrobe of neutral basics (white shirt, dark jeans, black trousers, navy blazer) and add personality through accessories and one statement piece per outfit. What specific aspect would you like to explore further?`,
+        `For "${q}", the key principles are: 1) Fit over brand — always. 2) Build on neutrals, accent with color. 3) Dress for the occasion but make it yours. 4) Quality over quantity. Can you give me more details about your specific situation so I can give you more targeted advice?`,
+        `Regarding "${q}" — I want to give you accurate advice. Could you tell me more? For example: What's the occasion, your body type preference, or the specific style you're going for? The more context you give me, the better I can help you nail the look.`
+      ];
+      return defaults[Math.floor(Math.random() * defaults.length)];
+    }
+
+    // Send welcome message on load
+    window.addEventListener('load', () => {
+      const user = JSON.parse(localStorage.getItem('sh_user') || 'null');
+      const name = user ? user.name : 'there';
+      setTimeout(() => {
+        appendMsg('bot', `Hi ${name}! 👋 I'm your AI Style Advisor. I know fashion inside out — colors, occasions, trends, body types, ethnic wear, and more. Ask me anything and I'll give you honest, accurate advice. What's on your mind today?`);
+      }, 400);
+    });
+  </script>
+</body>
+</html>

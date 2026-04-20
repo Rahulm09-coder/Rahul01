@@ -1201,23 +1201,10 @@
     <div class="footer-copy">© 2026 Style Hub · Designed with ♥ for fashion lovers</div>
   </footer>
 
-  <!-- ══════════════════ STYLE ADVISOR WIDGET ══════════════════ -->
-  <div class="style-advisor" id="style-advisor">
-    <button class="sa-toggle" id="sa-toggle" onclick="toggleAdvisor()" aria-label="Style Advisor">
-      <span class="sa-icon">🧠</span>
-      <span class="sa-label">Style Tip</span>
-    </button>
-    <div class="sa-panel" id="sa-panel">
-      <div class="sa-header">
-        <span>✨ AI Style Advisor</span>
-        <button onclick="toggleAdvisor()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.2rem;cursor:pointer;">×</button>
-      </div>
-      <div class="sa-tip" id="sa-tip"></div>
-      <div class="sa-actions">
-        <button class="sa-btn" onclick="nextTip()">Next Tip →</button>
-        <button class="sa-btn sa-btn-outline" onclick="shuffleTip()">Shuffle 🎲</button>
-      </div>
-    </div>
+  <!-- ══════════════════ AI ADVISOR FLOATING BTN ══════════════════ -->
+  <div class="ai-fab" id="ai-fab" title="Ask AI Style Advisor">
+    <span class="ai-fab-icon">✨</span>
+    <span class="ai-fab-label">AI Stylist</span>
   </div>
 
   <script src="app.js"></script>
