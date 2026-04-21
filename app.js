@@ -32,7 +32,6 @@ function initSplashScreen() {
 
   setTimeout(() => {
     document.querySelectorAll('.bubble-letter').forEach(el => {
-      el.style.animationDelay = '0s';
       el.classList.add('popped');
     });
   }, 2100);
