@@ -198,22 +198,23 @@
   </div>
 
   <script>
-    // ── PASTE YOUR GEMINI API KEY HERE ──
-    const API_KEY = 'PASTE_YOUR_KEY_HERE';
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+    // ── GROQ API KEY ──
+    const API_KEY = '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';
+    const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
     const input = document.getElementById('chat-input');
     const messagesEl = document.getElementById('chat-messages');
 
-    // Conversation history for context
-    const history = [];
-
-    // System prompt — makes Gemini behave as a fashion advisor only
-    const SYSTEM = `You are StyleHub AI, an expert fashion stylist and personal style advisor built into the StyleHub app. 
+    const history = [
+      {
+        role: 'system',
+        content: `You are StyleHub AI, an expert fashion stylist and personal style advisor built into the StyleHub app.
 You ONLY answer questions related to fashion, clothing, outfits, style, color combinations, occasion dressing, trends, accessories, fabrics, body types, ethnic wear, and personal styling.
 If someone asks about anything unrelated to fashion or style, politely say: "I'm your fashion advisor — I can only help with style, outfits, and fashion questions! 👗"
-Be friendly, specific, practical, and honest. Never make up brands or prices. Use emojis naturally. Keep replies concise but complete.
-Always give actionable advice the user can apply immediately.`;
+Be friendly, specific, practical, and honest. Never make up brands or prices. Use emojis naturally. Keep replies concise but helpful.
+Always give actionable advice the user can apply immediately.`
+      }
+    ];
 
     input.addEventListener('input', () => {
       input.style.height = 'auto';
@@ -235,31 +236,37 @@ Always give actionable advice the user can apply immediately.`;
       appendMsg('user', text);
       input.value = '';
       input.style.height = 'auto';
-      history.push({ role: 'user', parts: [{ text }] });
+      history.push({ role: 'user', content: text });
       showTyping();
 
       try {
         const res = await fetch(API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_KEY}`
+          },
           body: JSON.stringify({
-            system_instruction: { parts: [{ text: SYSTEM }] },
-            contents: history
+            model: 'llama-3.3-70b-versatile',
+            messages: history,
+            temperature: 0.7,
+            max_tokens: 1024
           })
         });
+
         const data = await res.json();
         removeTyping();
 
-        if (data.candidates && data.candidates[0]) {
-          const reply = data.candidates[0].content.parts[0].text;
-          history.push({ role: 'model', parts: [{ text: reply }] });
+        if (data.choices && data.choices[0]) {
+          const reply = data.choices[0].message.content;
+          history.push({ role: 'assistant', content: reply });
           appendMsg('bot', reply.replace(/\n/g, '<br>'));
         } else {
-          appendMsg('bot', "Sorry, I couldn't get a response. Please try again.");
+          appendMsg('bot', 'Sorry, I could not get a response. Please try again.');
         }
       } catch (err) {
         removeTyping();
-        appendMsg('bot', "Connection error. Please check your internet and try again.");
+        appendMsg('bot', 'Connection error. Please check your internet and try again.');
       }
     }
 
@@ -294,9 +301,9 @@ Always give actionable advice the user can apply immediately.`;
       const user = JSON.parse(localStorage.getItem('sh_user') || 'null');
       const name = user ? user.name : 'there';
       setTimeout(() => {
-        const welcome = `Hi ${name}! 👋 I'm your AI Style Advisor powered by Gemini AI. Ask me anything about fashion — outfits, colors, occasions, trends, ethnic wear, and more. I'll give you real, honest advice!`;
+        const welcome = `Hi ${name}! 👋 I'm StyleHub AI, your personal fashion advisor powered by Llama AI. Ask me anything about fashion — outfits, colors, occasions, trends, ethnic wear, and more!`;
         appendMsg('bot', welcome);
-        history.push({ role: 'model', parts: [{ text: welcome }] });
+        history.push({ role: 'assistant', content: welcome });
       }, 400);
     });
   </script>
