@@ -198,10 +198,23 @@
   </div>
 
   <script>
+    // ── PASTE YOUR GEMINI API KEY HERE ──
+    const API_KEY = 'PASTE_YOUR_KEY_HERE';
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
     const input = document.getElementById('chat-input');
     const messagesEl = document.getElementById('chat-messages');
 
-    // Auto-resize textarea
+    // Conversation history for context
+    const history = [];
+
+    // System prompt — makes Gemini behave as a fashion advisor only
+    const SYSTEM = `You are StyleHub AI, an expert fashion stylist and personal style advisor built into the StyleHub app. 
+You ONLY answer questions related to fashion, clothing, outfits, style, color combinations, occasion dressing, trends, accessories, fabrics, body types, ethnic wear, and personal styling.
+If someone asks about anything unrelated to fashion or style, politely say: "I'm your fashion advisor — I can only help with style, outfits, and fashion questions! 👗"
+Be friendly, specific, practical, and honest. Never make up brands or prices. Use emojis naturally. Keep replies concise but complete.
+Always give actionable advice the user can apply immediately.`;
+
     input.addEventListener('input', () => {
       input.style.height = 'auto';
       input.style.height = Math.min(input.scrollHeight, 120) + 'px';
@@ -216,22 +229,42 @@
       sendMessage();
     }
 
-    function sendMessage() {
+    async function sendMessage() {
       const text = input.value.trim();
       if (!text) return;
       appendMsg('user', text);
       input.value = '';
       input.style.height = 'auto';
+      history.push({ role: 'user', parts: [{ text }] });
       showTyping();
-      setTimeout(() => {
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: SYSTEM }] },
+            contents: history
+          })
+        });
+        const data = await res.json();
         removeTyping();
-        const reply = getReply(text);
-        appendMsg('bot', reply);
-      }, 900 + Math.random() * 600);
+
+        if (data.candidates && data.candidates[0]) {
+          const reply = data.candidates[0].content.parts[0].text;
+          history.push({ role: 'model', parts: [{ text: reply }] });
+          appendMsg('bot', reply.replace(/\n/g, '<br>'));
+        } else {
+          appendMsg('bot', "Sorry, I couldn't get a response. Please try again.");
+        }
+      } catch (err) {
+        removeTyping();
+        appendMsg('bot', "Connection error. Please check your internet and try again.");
+      }
     }
 
     function appendMsg(role, text) {
-      const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const div = document.createElement('div');
       div.className = `msg ${role}`;
       div.innerHTML = `
@@ -251,114 +284,19 @@
       messagesEl.appendChild(div);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
+
     function removeTyping() {
       const t = document.getElementById('typing-msg');
       if (t) t.remove();
     }
 
-    // ── Fashion Knowledge Base ──
-    function getReply(q) {
-      const query = q.toLowerCase();
-
-      // Wedding
-      if (query.includes('wedding')) {
-        if (query.includes('guest')) return "As a wedding guest, avoid white, ivory, or cream — those are reserved for the bride. Great choices: dusty rose, sage green, navy, burgundy, or gold. For Indian weddings, opt for vibrant ethnic wear like lehengas, sarees, or sherwanis. For Western weddings, a midi dress or a tailored suit works perfectly.";
-        return "For a wedding, choose elegant and occasion-appropriate attire. Women: sarees, lehengas, anarkalis, or formal gowns depending on the wedding type. Men: sherwanis for Indian weddings, suits or tuxedos for Western. Avoid casual wear, jeans, or overly casual prints. Stick to rich, festive colors.";
-      }
-
-      // Job interview
-      if (query.includes('interview') || query.includes('job')) {
-        return "For a job interview, dress one level above the company's dress code. For corporate roles: formal suit in navy, charcoal, or black. For creative roles: smart casual — tailored trousers, a neat shirt or blouse. Avoid loud prints, excessive accessories, or casual wear. Clean, well-fitted clothes signal professionalism and confidence.";
-      }
-
-      // Colors for skin tone
-      if (query.includes('dark skin') || query.includes('dark tone') || query.includes('brown skin')) {
-        return "For dark skin tones, these colors look absolutely stunning:\n\n✅ Rich jewel tones: emerald green, royal blue, deep purple, burgundy\n✅ Warm earth tones: terracotta, mustard, burnt orange, camel\n✅ Bright pops: coral, fuchsia, cobalt, lime green\n✅ Classic white and ivory — creates beautiful contrast\n\nAvoid: very dark navy or black on black — it can lose definition. Pastels can work but choose saturated versions.";
-      }
-      if (query.includes('fair skin') || query.includes('light skin') || query.includes('pale')) {
-        return "For fair/light skin tones, these colors work beautifully:\n\n✅ Cool tones: navy, cobalt blue, forest green, burgundy, plum\n✅ Warm tones: coral, peach, warm red, camel\n✅ Pastels: blush pink, lavender, mint — very flattering\n\nAvoid: very pale yellows or beiges close to your skin tone — they can wash you out. High contrast colors like black and white are always a safe bet.";
-      }
-
-      // Quiet luxury
-      if (query.includes('quiet luxury') || query.includes('old money')) {
-        return "Quiet Luxury (also called 'Old Money' aesthetic) is about understated elegance:\n\n🎯 Key pieces: cashmere sweaters, tailored trousers, crisp white shirts, loafers, minimal leather bags\n🎨 Color palette: beige, camel, ivory, cream, navy, grey, white — no loud prints or logos\n✂️ Fit is everything — clothes should be perfectly tailored\n🚫 No visible logos, no flashy branding\n\nBrands that nail this: Loro Piana, The Row, Brunello Cucinelli. Budget alternatives: Uniqlo, Massimo Dutti, Mango.";
-      }
-
-      // Saree styling
-      if (query.includes('saree') || query.includes('sari')) {
-        return "Saree styling tips:\n\n👗 Draping: The Nivi drape (Andhra style) is the most common and universally flattering. For a modern look, try the butterfly or dhoti drape.\n\n👚 Blouse: A well-fitted blouse is key. Deep back, off-shoulder, or crop blouse styles are trending.\n\n💄 Accessories: Keep jewelry minimal if the saree is heavy. Statement earrings work best.\n\n👠 Footwear: Heels elongate the silhouette. Block heels are comfortable for long events.\n\n🎨 Color tip: Contrast your blouse with the saree — e.g., a red saree with a gold or black blouse.";
-      }
-
-      // Summer outfits
-      if (query.includes('summer')) {
-        return "Best summer outfit ideas:\n\n☀️ Fabrics: Linen, cotton, chambray — breathable and sweat-resistant\n🎨 Colors: White, sky blue, coral, mint, yellow, pastels\n\nFor women: Flowy midi dresses, linen co-ord sets, cotton kurtas, shorts + breezy tops\nFor men: Linen shirts (half-tucked), cotton polos, chino shorts, light-wash jeans\n\n🚫 Avoid: Polyester, dark heavy fabrics, tight synthetic clothing — they trap heat.\n\nPro tip: A white linen shirt is the single most versatile summer piece you can own.";
-      }
-
-      // Color combinations
-      if (query.includes('color') || query.includes('colour') || query.includes('combination') || query.includes('palette')) {
-        return "Top color combination rules:\n\n🎨 Complementary (opposite on wheel): Blue + Orange, Purple + Yellow, Red + Green — bold and high contrast\n\n🌈 Analogous (neighbors on wheel): Blue + Purple + Pink — harmonious and cohesive\n\n⚫ Neutral base: Build around white, black, navy, or beige — then add one accent color\n\n🔢 Rule of Three: Max 3 colors per outfit. One dominant (60%), one secondary (30%), one accent (10%)\n\n✨ Monochromatic: Same color in different shades — always looks intentional and polished";
-      }
-
-      // Casual outfit
-      if (query.includes('casual')) {
-        return "Casual outfit formula that always works:\n\n👕 Top: Plain tee, oversized shirt, or casual blouse\n👖 Bottom: Well-fitted jeans, chinos, or casual trousers\n👟 Shoes: White sneakers, loafers, or clean casual shoes\n\nElevate it: Add a denim jacket, a minimal watch, or a crossbody bag.\n\n🎨 Color tip: Stick to neutrals (white, grey, navy, black) for the base — then add one color pop through accessories or a layer.";
-      }
-
-      // Formal outfit
-      if (query.includes('formal') || query.includes('office') || query.includes('work')) {
-        return "Formal/office dressing guide:\n\n👔 Men: Tailored suit (navy or charcoal), crisp white or light blue shirt, leather shoes, minimal tie. Fit is everything.\n\n👗 Women: Tailored blazer + trousers, pencil skirt + blouse, or a structured midi dress. Stick to neutral or muted tones.\n\n🎨 Colors: Navy, charcoal, black, white, grey, burgundy — professional and authoritative\n\n🚫 Avoid: Loud prints, casual sneakers, excessive jewelry, wrinkled clothes\n\n💡 Pro tip: A well-fitted blazer is the single most powerful piece in any professional wardrobe.";
-      }
-
-      // Body type
-      if (query.includes('body type') || query.includes('pear') || query.includes('apple') || query.includes('hourglass') || query.includes('rectangle')) {
-        return "Dressing for your body type:\n\n⌛ Hourglass: Wrap dresses, fitted tops, belted styles — highlight your waist\n🍐 Pear (wider hips): A-line skirts, wide-leg trousers, structured shoulders — balance upper and lower\n🍎 Apple (fuller midsection): Empire waist, flowy tops, V-necks, straight-leg trousers — elongate the torso\n📏 Rectangle (straight): Peplum tops, ruffles, belted outfits — create curves\n\nRemember: These are guidelines, not rules. Wear what makes YOU feel confident.";
-      }
-
-      // Accessories
-      if (query.includes('accessori') || query.includes('jewel') || query.includes('bag') || query.includes('watch')) {
-        return "Accessory rules:\n\n💎 Less is more: If your outfit is bold/printed, keep accessories minimal. If your outfit is simple, go statement.\n\n👜 Bag: Match the formality — clutch for evening, tote for work, crossbody for casual\n\n⌚ Watch: A clean minimal watch elevates any outfit instantly\n\n📿 Jewelry: Mix metals carefully — gold with warm tones, silver with cool tones. Don't mix gold and silver unless intentional.\n\n🎨 Color: Accessories should complement, not compete with your outfit.";
-      }
-
-      // Trends 2025/2026
-      if (query.includes('trend') || query.includes('2025') || query.includes('2026') || query.includes('fashion now')) {
-        return "Top fashion trends right now (2025-2026):\n\n1. 🤫 Quiet Luxury — Understated, logo-free, high-quality basics\n2. 💊 Dopamine Dressing — Bold, saturated colors that boost mood\n3. 🌿 Eco Chic — Sustainable fabrics, earthy tones (sage, terracotta, sand)\n4. 🏕️ Gorpcore — Outdoor utility meets street style (cargo, technical fabrics)\n5. 👗 Sheer & Layering — Transparent fabrics layered over basics\n6. 🪡 Texture Play — Mixing textures (leather + knit, silk + denim)\n7. 👖 Wide-leg everything — Wide-leg trousers, jeans, and palazzo pants";
-      }
-
-      // Ethnic wear
-      if (query.includes('ethnic') || query.includes('kurta') || query.includes('lehenga') || query.includes('sherwani') || query.includes('indian')) {
-        return "Indian ethnic wear guide:\n\n👗 Women:\n• Saree — timeless, for all occasions\n• Lehenga — weddings and festive events\n• Anarkali — elegant, suits all body types\n• Kurta + palazzo — modern ethnic casual\n\n👔 Men:\n• Sherwani — weddings and formal events\n• Kurta + churidar — festive and semi-formal\n• Nehru jacket over shirt — smart ethnic casual\n\n🎨 Festive colors: Red, gold, emerald, royal blue, maroon, mustard\n💡 Tip: Contrast your dupatta or stole with the main outfit for a polished look.";
-      }
-
-      // What to wear
-      if (query.includes('what to wear') || query.includes('what should i wear') || query.includes('outfit idea')) {
-        return "To give you the best outfit advice, tell me:\n\n1. 📅 What's the occasion? (casual, work, wedding, party, date, etc.)\n2. 🌡️ What's the weather/season?\n3. 👤 Your gender preference?\n4. 🎨 Any color preferences?\n\nOr just describe the situation and I'll give you a complete outfit recommendation!";
-      }
-
-      // Denim
-      if (query.includes('denim') || query.includes('jeans')) {
-        return "Denim styling guide:\n\n👖 Jeans fits:\n• Slim fit — versatile, works for casual and smart casual\n• Wide-leg — trendy, pair with fitted top\n• Straight leg — the most universally flattering\n• Skinny — best with oversized tops or longline jackets\n\n🎨 Washes:\n• Light wash — casual, summer-friendly\n• Dark wash — more formal, slimming effect\n• Black denim — dressier, can go semi-formal\n\n💡 Golden rule: One denim piece at a time. Don't double denim unless you're very intentional about it.";
-      }
-
-      // Shoes / footwear
-      if (query.includes('shoe') || query.includes('footwear') || query.includes('sneaker') || query.includes('heel') || query.includes('boot')) {
-        return "Footwear guide:\n\n👟 White sneakers — the most versatile shoe ever. Works with everything.\n👞 Loafers — smart casual, great for office and casual alike\n👠 Block heels — comfortable and stylish for events\n👢 Ankle boots — elevate any casual or smart casual outfit\n🥿 Ballet flats — feminine, comfortable, great for daily wear\n\n🎨 Color rule:\n• Nude/beige shoes — elongate legs, go with everything\n• White shoes — fresh and modern\n• Black shoes — formal and versatile\n• Metallic (gold/silver) — evening and festive";
-      }
-
-      // Default intelligent response
-      const defaults = [
-        `Great question about "${q}"! Here's my honest advice: Fashion is about expressing yourself confidently. Start with fit — well-fitted clothes in any style look better than expensive ill-fitting ones. Build a capsule wardrobe of neutral basics (white shirt, dark jeans, black trousers, navy blazer) and add personality through accessories and one statement piece per outfit. What specific aspect would you like to explore further?`,
-        `For "${q}", the key principles are: 1) Fit over brand — always. 2) Build on neutrals, accent with color. 3) Dress for the occasion but make it yours. 4) Quality over quantity. Can you give me more details about your specific situation so I can give you more targeted advice?`,
-        `Regarding "${q}" — I want to give you accurate advice. Could you tell me more? For example: What's the occasion, your body type preference, or the specific style you're going for? The more context you give me, the better I can help you nail the look.`
-      ];
-      return defaults[Math.floor(Math.random() * defaults.length)];
-    }
-
-    // Send welcome message on load
     window.addEventListener('load', () => {
       const user = JSON.parse(localStorage.getItem('sh_user') || 'null');
       const name = user ? user.name : 'there';
       setTimeout(() => {
-        appendMsg('bot', `Hi ${name}! 👋 I'm your AI Style Advisor. I know fashion inside out — colors, occasions, trends, body types, ethnic wear, and more. Ask me anything and I'll give you honest, accurate advice. What's on your mind today?`);
+        const welcome = `Hi ${name}! 👋 I'm your AI Style Advisor powered by Gemini AI. Ask me anything about fashion — outfits, colors, occasions, trends, ethnic wear, and more. I'll give you real, honest advice!`;
+        appendMsg('bot', welcome);
+        history.push({ role: 'model', parts: [{ text: welcome }] });
       }, 400);
     });
   </script>
