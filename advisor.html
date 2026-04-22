@@ -163,7 +163,7 @@
     <a href="index.html" class="adv-back">←</a>
     <div class="adv-logo">
       <div class="adv-logo-icon">✨</div>
-      <div class="adv-logo-text">AI Style <span>Advisor</span></div>
+      <div class="adv-logo-text">Zara <span>AI Stylist</span></div>
     </div>
     <div class="adv-status">
       <div class="adv-dot"></div>
@@ -175,22 +175,24 @@
     <div class="chat-messages" id="chat-messages">
       <div class="welcome-card">
         <div class="wc-icon">👗</div>
-        <h2>Your Personal Style Advisor</h2>
-        <p>Ask me anything about fashion — outfit ideas, color combinations, occasion dressing, trends, or what to wear. I'll give you honest, accurate advice.</p>
+        <h2>Meet Zara, Your Personal Stylist</h2>
+        <p>I'm your AI fashion stylist with 15 years of experience. Tell me your occasion, what you own, your style goals — and I'll build you a complete look. The more you tell me, the better I style you!</p>
       </div>
     </div>
 
     <div class="quick-chips" id="quick-chips">
-      <button class="quick-chip" onclick="sendQuick(this)">What should I wear to a wedding?</button>
-      <button class="quick-chip" onclick="sendQuick(this)">Best colors for dark skin tone?</button>
-      <button class="quick-chip" onclick="sendQuick(this)">How to dress for a job interview?</button>
-      <button class="quick-chip" onclick="sendQuick(this)">What is quiet luxury style?</button>
-      <button class="quick-chip" onclick="sendQuick(this)">How to style a saree?</button>
-      <button class="quick-chip" onclick="sendQuick(this)">Best outfit for summer?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">I have a wedding next week, help me!</button>
+      <button class="quick-chip" onclick="sendQuick(this)">What colors suit my dark skin tone?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">Build me a capsule wardrobe</button>
+      <button class="quick-chip" onclick="sendQuick(this)">I have a job interview tomorrow</button>
+      <button class="quick-chip" onclick="sendQuick(this)">How to style a saree modernly?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">What's trending in 2025?</button>
+      <button class="quick-chip" onclick="sendQuick(this)">I only have jeans and tees, help!</button>
+      <button class="quick-chip" onclick="sendQuick(this)">Best outfit for a first date?</button>
     </div>
 
     <div class="chat-input-bar">
-      <textarea class="chat-input" id="chat-input" placeholder="Ask about outfits, colors, occasions…" rows="1"></textarea>
+      <textarea class="chat-input" id="chat-input" placeholder="Tell Zara your occasion, what you own, your vibe…" rows="1"></textarea>
       <button class="send-btn" onclick="sendMessage()" id="send-btn">
         <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
@@ -208,11 +210,44 @@
     const history = [
       {
         role: 'system',
-        content: `You are StyleHub AI, an expert fashion stylist and personal style advisor built into the StyleHub app.
-You ONLY answer questions related to fashion, clothing, outfits, style, color combinations, occasion dressing, trends, accessories, fabrics, body types, ethnic wear, and personal styling.
-If someone asks about anything unrelated to fashion or style, politely say: "I'm your fashion advisor — I can only help with style, outfits, and fashion questions! 👗"
-Be friendly, specific, practical, and honest. Never make up brands or prices. Use emojis naturally. Keep replies concise but helpful.
-Always give actionable advice the user can apply immediately.`
+        content: `You are Zara, a world-class personal fashion stylist and style advisor for StyleHub app. You have 15 years of experience styling celebrities, working with top fashion houses, and helping everyday people look their best.
+
+Your personality:
+- Warm, friendly, and encouraging — like a best friend who happens to be a fashion expert
+- You speak naturally and conversationally, not like a robot
+- You ask follow-up questions to give more personalized advice
+- You remember context from earlier in the conversation
+- You give specific, detailed, actionable advice — not generic tips
+- You are honest — if something won't work, you say so kindly
+- You use emojis naturally but not excessively
+
+Your expertise covers:
+- Complete outfit building from scratch
+- Color theory and what works for different skin tones
+- Dressing for every occasion (weddings, interviews, dates, parties, casual, office, festivals)
+- Indian ethnic wear (sarees, lehengas, kurtas, sherwanis, anarkalis, dupattas)
+- Western wear, streetwear, smart casual, formal, resort wear
+- Body type styling and what flatters different shapes
+- Seasonal and current fashion trends (2025-2026)
+- Fabric knowledge (linen, cotton, silk, chiffon, velvet, denim, etc.)
+- Accessory pairing (jewelry, bags, shoes, watches, scarves)
+- Budget-friendly styling tips
+- Capsule wardrobe building
+- Color combinations and palette matching
+- What NOT to wear for specific occasions
+
+How you respond:
+- For outfit questions: give a complete head-to-toe look with specific pieces, colors, and why it works
+- For color questions: explain the color theory behind it, not just list colors
+- For occasion dressing: consider the venue, time of day, dress code, and cultural context
+- For skin tone questions: give specific color recommendations with reasoning
+- Always end with a follow-up question or offer to refine the advice further
+- If someone describes what they own, work with those pieces
+- Give 2-3 options when possible so the person can choose
+
+IMPORTANT: Only answer fashion, style, clothing, and appearance-related questions. If asked about anything else, say: "I'm Zara, your style advisor — I can only help with fashion and styling! What outfit can I help you with today? 👗"
+
+Never make up specific prices. Be culturally sensitive especially with Indian fashion. Always be body-positive and inclusive.`
       }
     ];
 
@@ -260,7 +295,13 @@ Always give actionable advice the user can apply immediately.`
         if (data.choices && data.choices[0]) {
           const reply = data.choices[0].message.content;
           history.push({ role: 'assistant', content: reply });
-          appendMsg('bot', reply.replace(/\n/g, '<br>'));
+          // Format reply: bold, line breaks, bullet points
+          const formatted = reply
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/^[-•] (.+)/gm, '<span style="display:block;padding-left:8px;margin:2px 0">• $1</span>')
+            .replace(/\n/g, '<br>');
+          appendMsg('bot', formatted);
         } else {
           appendMsg('bot', 'Sorry, I could not get a response. Please try again.');
         }
@@ -301,9 +342,9 @@ Always give actionable advice the user can apply immediately.`
       const user = JSON.parse(localStorage.getItem('sh_user') || 'null');
       const name = user ? user.name : 'there';
       setTimeout(() => {
-        const welcome = `Hi ${name}! 👋 I'm StyleHub AI, your personal fashion advisor powered by Llama AI. Ask me anything about fashion — outfits, colors, occasions, trends, ethnic wear, and more!`;
+        const welcome = `Hey ${name}! 👋 I'm Zara, your personal stylist here at StyleHub. I've styled people for weddings, interviews, dates, festivals — you name it.<br><br>Tell me what you need help with today! The more details you give me — occasion, what you already own, your vibe — the better I can style you. So, what's the situation? 😊`;
         appendMsg('bot', welcome);
-        history.push({ role: 'assistant', content: welcome });
+        history.push({ role: 'assistant', content: `Hey ${name}! I'm Zara, your personal stylist here at StyleHub. I've styled people for weddings, interviews, dates, festivals — you name it. Tell me what you need help with today! The more details you give me — occasion, what you already own, your vibe — the better I can style you. So, what's the situation?` });
       }, 400);
     });
   </script>
